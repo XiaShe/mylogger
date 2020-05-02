@@ -1,5 +1,7 @@
 package mylogger
 
+import "errors"
+
 type Loglevel uint16
 
 // 日志级别 高 ---> 低
@@ -13,20 +15,23 @@ const (
 	FATAL
 )
 
-// Logger 日志结构体
-type Logger struct {
-	Level Loglevel
-}
-
-// Newlog 构造函数
-func Newlog(levelStr string) Logger {
-	// 判断日志级别，错误输入则报错
-	level, err := parseLogLevel(levelStr)
-	if err != nil {
-		panic(err)
-	}
-
-	return Logger{
-		Level:level,
+// 判断日志级别
+func parseLogLevel(s string) (Loglevel, error)  {
+	switch s {
+	case "debug":
+		return DEBUG, nil
+	case "trace":
+		return TRACE, nil
+	case "info":
+		return INFO, nil
+	case "warning":
+		return WARNING, nil
+	case "error":
+		return ERROR, nil
+	case "fatal":
+		return FATAL, nil
+	default:
+		err := errors.New("无效日志级别")
+		return UNKNOWN, err
 	}
 }
