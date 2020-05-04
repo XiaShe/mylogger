@@ -6,6 +6,7 @@ import (
 )
 
 func main() {
+	// 限定输出error以下级别的日志
 	log := mylogger.Newlog("error")
 	for {
 		log.Debug("这是一条Debug日志")

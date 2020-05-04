@@ -1,29 +1,25 @@
 package mylogger
 
 import (
-	"errors"
 	"fmt"
 	"time"
 )
 
-// 判断日志级别
-func parseLogLevel(s string) (Loglevel, error)  {
-	switch s {
-	case "debug":
-		return DEBUG, nil
-	case "trace":
-		return TRACE, nil
-	case "info":
-		return INFO, nil
-	case "warning":
-		return WARNING, nil
-	case "error":
-		return ERROR, nil
-	case "fatal":
-		return FATAL, nil
-	default:
-		err := errors.New("无效日志级别")
-		return UNKNOWN, err
+// Logger 日志结构体
+type Logger struct {
+	Level Loglevel
+}
+
+// Newlog 构造函数
+func Newlog(levelStr string) Logger {
+	// 判断日志级别，错误输入则报错
+	level, err := parseLogLevel(levelStr)
+	if err != nil {
+		panic(err)
+	}
+
+	return Logger{
+		Level:level,
 	}
 }
 
@@ -32,40 +28,42 @@ func (l Logger) enable(loglevel Loglevel) bool {
 	return loglevel >= l.Level
 }
 
+//
+func log(lv Loglevel, msg string) {
+	now := time.Now()
+	funcName, fileName, lineNo := getInfo(3)
+	fmt.Printf("[%s] [%s] [%s:%s:%d] %s\n", now.Format("2006-01-02 15:04:05"), getlogString(lv), fileName, funcName, lineNo, msg)
+}
+
 func (l Logger) Debug(msg string) {
 	if l.enable(DEBUG) {
-		now := time.Now()
-		fmt.Printf("[%s] [Debug] %s\n", now.Format("2006-01-02 15:04:05"), msg)
+		log(DEBUG, msg)
 	}
 }
 
 func (l Logger) Info(msg string) {
 	if l.enable(INFO) {
-		now := time.Now()
-		fmt.Printf("[%s] [Info] %s\n", now.Format("2006-01-02 15:04:05"), msg)
+		log(INFO, msg)
 	}
 }
 
 func (l Logger) Warning(msg string) {
 	if l.enable(WARNING) {
-		now := time.Now()
-		fmt.Printf("[%s] [Warning] %s\n", now.Format("2006-01-02 15:04:05"), msg)
+		log(WARNING, msg)
 	}
 }
 
 
 func (l Logger) Error(msg string) {
 	if l.enable(ERROR) {
-		now := time.Now()
-		fmt.Printf("[%s] [Error] %s\n", now.Format("2006-01-02 15:04:05"), msg)
+		log(ERROR, msg)
 	}
 }
 
 
 func (l Logger) Fatal(msg string) {
 	if l.enable(FATAL) {
-		now := time.Now()
-		fmt.Printf("[%s] [Fatal] %s\n", now.Format("2006-01-02 15:04:05"), msg)
+		log(FATAL, msg)
 	}
 }
 
