@@ -8,11 +8,20 @@ import (
 	"strings"
 )
 
+type Logger interface {
+	Debug(format string, a ...interface{})
+	Info(format string, a ...interface{})
+	Warning(format string, a ...interface{})
+	Error(format string, a ...interface{})
+	Fatal(format string, a ...interface{})
+}
+
+// 日志级别
 type Loglevel uint16
 
 // 日志级别 高 ---> 低
 const (
-	UNKNOWN Loglevel = iota  //
+	UNKNOWN Loglevel = iota //
 	DEBUG
 	TRACE
 	INFO
@@ -22,11 +31,11 @@ const (
 )
 
 // 判断日志级别
-func parseLogLevel(s string) (Loglevel, error)  {
+func parseLogLevel(s string) (Loglevel, error) {
 	switch s {
 	case "debug":
 		return DEBUG, nil
-	case "trace":
+	case "trace": // 没用到
 		return TRACE, nil
 	case "info":
 		return INFO, nil
@@ -42,7 +51,8 @@ func parseLogLevel(s string) (Loglevel, error)  {
 	}
 }
 
-func getlogString(lv Loglevel)string {
+// 得到日志级别
+func getlogString(lv Loglevel) string {
 	switch lv {
 	case DEBUG:
 		return "DEBUG"
@@ -61,11 +71,10 @@ func getlogString(lv Loglevel)string {
 	return "DEBUG"
 }
 
-
 // 执行函数 行号、函数命、文件名判定
 // 传入参数skip是要提升的堆栈帧数，0-当前函数，1-上一层函数，....
-func getInfo(n int) (funcName, fileName string, lineNo int ) {
-	pc,file,lineNo,ok := runtime.Caller(n)
+func getInfo(n int) (funcName, fileName string, lineNo int) {
+	pc, file, lineNo, ok := runtime.Caller(n)
 	// 如果不能成功执行runtime.Caller()方法：
 	if !ok {
 		fmt.Printf("runtime.Caller() failed\n")
